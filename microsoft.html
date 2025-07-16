@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft</title>
+    <link rel="icon" href="src/Microsoft_icon.svg" type="image/svg+xml">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            height: clamp(100px, 15vw, 150px);
+            width: auto;
+        }
+
+        .microsoft-logo {
+            height: clamp(40px, 8vw, 60px);
+            width: auto;
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin: 0 1rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: clamp(10px, 2vw, 20px);
+            padding: clamp(20px, 4vw, 40px);
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-grow: 1;
+            align-self: center;
+        }
+
+        .grid-box {
+            aspect-ratio: 16/9;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #333;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            text-align: center;
+            padding: clamp(10px, 2vw, 20px);
+        }
+
+        .grid-box:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-box img {
+            height: clamp(24px, 5vw, 40px);
+            width: auto;
+            margin-right: clamp(5px, 1vw, 10px);
+        }
+
+        .yellow { background-color: #FFD700; }
+        .blue { background-color: #87CEEB; }
+        .green { background-color: #00C957; }
+        .red { background-color: #FF4136; }
+        .musored { background-color: #ed342c; }
+
+        .footer {
+            background-color: #FF4136;
+            height: clamp(50px, 10vh, 60px);
+            margin-top: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ask-expert-btn {
+            background-color: white;
+            color: #FF4136;
+            border: none;
+            padding: clamp(6px, 1.5vw, 8px) clamp(12px, 3vw, 16px);
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .ask-expert-btn:hover {
+            background-color: #f8f8f8;
+            transform: scale(1.05);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: clamp(15px, 3vw, 30px);
+            border-radius: 15px;
+            width: min(90%, 500px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: clamp(10px, 2vw, 20px);
+        }
+
+        .modal-title {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            color: #FF4136;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            cursor: pointer;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: clamp(10px, 2vw, 15px);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: clamp(8px, 1.5vw, 10px);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        textarea {
+            min-height: clamp(80px, 15vw, 120px);
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background-color: #FF4136;
+            color: white;
+            border: none;
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 3vw, 20px);
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .submit-btn:hover {
+            background-color: #E30B00;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: clamp(10px, 2vw, 20px);
+            right: clamp(10px, 2vw, 20px);
+            background-color: #4CAF50;
+            color: white;
+            padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 20px);
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1001;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        /* Admin panel */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 1002;
+            padding: clamp(10px, 2vw, 20px);
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: clamp(10px, 2vw, 20px);
+        }
+
+        .message-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: clamp(10px, 2vw, 15px);
+            margin-bottom: clamp(10px, 2vw, 15px);
+            background-color: #f9f9f9;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: clamp(5px, 1vw, 10px);
+        }
+
+        .message-time {
+            color: #777;
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+        }
+
+        .message-content {
+            margin-top: clamp(5px, 1vw, 10px);
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        .no-messages {
+            text-align: center;
+            color: #777;
+            margin-top: clamp(30px, 5vw, 50px);
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .grid-box {
+                font-size: 1rem;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .header {
+                padding: 10px 3%;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo, .microsoft-logo {
+                height: clamp(30px, 10vw, 40px);
+            }
+
+            .header h1 {
+                font-size: clamp(1.2rem, 3vw, 1.5rem);
+            }
+
+            .grid-box {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .grid-box {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+
+            .grid-box img {
+                height: clamp(20px, 6vw, 30px);
+            }
+
+            .header {
+                padding: 8px 2%;
+            }
+
+            .logo, .microsoft-logo {
+                height: 80px;
+                width: 80px;
+            }
+
+            .modal-content {
+                padding: 10px;
+            }
+
+            .modal-title {
+                font-size: 1.2rem;
+            }
+
+            .close-btn {
+                font-size: 1.2rem;
+            }
+
+            .submit-btn {
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="src\MusologinSVG.svg" alt="MuSo Logo" class="logo">
+        <h1>X</h1>
+        <img src="src/Microsoft_logo_(2012).svg" alt="Microsoft Logo" class="microsoft-logo">
+    </div>
+
+    <button onclick="window.open('index.html', '_blank');" class="ask-expert-btn" style="margin: 1rem auto; display: block;">Go Back</button>
+
+    <div class="grid-container">
+        <a href="https://www.bing.com/images/create" class="grid-box yellow" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.bing.com/sa/simg/favicon-trans-bg-blue-mg-png.png" alt="Microsoft Bing Logo" style="height:32px;width:32px;margin-right:10px;">
+            <span>Microsoft Bing</span>
+        </a>
+        <a href="https://copilot.microsoft.com/" class="grid-box blue" target="_blank" rel="noopener noreferrer">
+            <img src="https://copilot.microsoft.com/favicon.ico" alt="Microsoft Copilot Logo" style="height:40px;width:40px;margin-right:10px;">
+            <span>Copilot</span>
+        </a>
+        <a href="https://designer.microsoft.com/" class="grid-box green" target="_blank" rel="noopener noreferrer">
+            <img src="src/microsoft-designer-1.svg" alt="Microsoft Designer Logo" style="height:32px;width:32px;margin-right:10px;">
+            <span> Microsoft <br> Designer</span>
+        </a>
+        <a href="https://education.minecraft.net/en-us/discover/ai" class="grid-box red" target="_blank" rel="noopener noreferrer">
+            <img src="src/minecraft.svg" alt="Minecraft Education Logo" style="height:120px;width:120px;margin-right:10px;">
+            <span></span>
+        </a>
+    </div>
+
+    <div class="grid-container">
+        <a href="https://coach.microsoft.com/en-us" class="grid-box green" target="_blank" rel="noopener noreferrer">
+            <img src="src/ReachingCoach.svg" alt="Microsoft Bing Logo" style="height:32px;width:32px;margin-right:10px;">
+            <span>Reading coach</span>
+        </a>
+        <a href="https://www.microsoft.com/en-us/makecode" class="grid-box blue" target="_blank" rel="noopener noreferrer">
+            <img src="src/Microsoft_icon.svg" alt="Microsoft Copilot Logo" style="height:40px;width:40px;margin-right:10px;">
+            <span>Microsoft <br> Make Code</span>
+        </a>
+        <a href="https://math.microsoft.com/en" class="grid-box yellow" target="_blank" rel="noopener noreferrer">
+            <img src="src/microsoft-math-svgrepo-com.svg" alt="Microsoft Designer Logo" style="height:32px;width:32px;margin-right:10px;">
+            <span>Microsoft <br>Math solver</span>
+        </a>
+        <a href="https://studio.code.org/courses/oceans/units/1/lessons/1/levels/1" class="grid-box musored" target="_blank" rel="noopener noreferrer">
+            <img src="src\Code.org_logo.svg" alt="Minecraft Education Logo" style="height:34px;width:34px;margin-right:10px;">
+            <span style="color: white;">Studio Code</span>
+        </a>
+    </div>
+</body>
+</html>
