@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MuSo - Museum of Solutions</title>
+    <link rel="icon" href="src/Muso.png" type="image/png">
     <style>
         body {
             margin: 0;
@@ -28,7 +29,7 @@
         }
 
         .microsoft-logo {
-            height: 80px;
+            height: 30px;
             width: auto;
         }
 
@@ -67,6 +68,41 @@
         .green { background-color: #00C957; }
         .red { background-color: #FF4136; }
 
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 40px;
+        }
+
+        .explore-microsoft-btn {
+            background-color: #2fa0d9;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-weight: bold;
+            cursor: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .explore-microsoft-btn:hover {
+            background-color: #ffffff;
+            color: #2fa0d9;
+            transform: scale(1.05);
+        }
+
+        .explore-microsoft-btn img {
+            height: 24px;
+            width: auto;
+        }
+
+        .explore-microsoft-btn:hover {
+            background-color: #f8f8f8;
+            transform: scale(1.05);
+        }
+
         .footer {
             background-color: #FF4136;
             height: 60px;
@@ -74,6 +110,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 0 40px;
         }
 
         .ask-expert-btn {
@@ -260,13 +297,21 @@
                 width: 95%;
                 padding: 20px;
             }
+
+            .button-container {
+                padding: 10px 20px;
+            }
+
+            .footer {
+                padding: 0 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/muso%20logo%202%20-tJFMZd8jY1RHA1MLmXhcjLbAypGApP.png" alt="MuSo Logo" class="logo">
-        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-tFLUMdsZtQsLU3LEezEmLae3GSiftV.png" alt="Microsoft Logo" class="microsoft-logo">
+        <img src="src/MusologinSVG.svg" alt="MuSo Logo" class="logo">
+        <img src="src/Microsoft_logo_(2012).svg" alt="Microsoft Logo" class="microsoft-logo">
     </div>
 
     <div class="grid-container">
@@ -280,25 +325,31 @@
         <a href="https://seamless.metademolab.com/expressive" class="grid-box yellow" target="_blank" rel="noopener noreferrer">Seemless translation</a>
     </div>
 
+    <div class="button-container">
+        <button class="explore-microsoft-btn" onclick="window.open('microsoft.html', '_blank')">
+            <img src="src/Microsoft_icon.svg" alt="Microsoft Logo">
+            Explore more with Microsoft
+        </button>
+    </div>
+    
     <div class="footer">
         <button class="ask-expert-btn" id="askExpertBtn">Ask an Expert</button>
     </div>
-
-    <!-- Ask Expert Modal -->
+    
     <div class="modal" id="expertModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">Ask an Expert</h2>
-                <button class="close-btn" id="closeModal">&times;</button>
+                <button class="close-btn" id="closeModal">×</button>
             </div>
-            <form action="https://formspree.io/f/xblgjbqn" method="POST">
+            <form id="expertForm">
                 <div class="form-group">
                     <label for="name">Your Name</label>
                     <input type="text" id="name" name="name" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Your Email</label>
-                    <input type="email" id="email" name="email" Optional>
+                    <input type="email" id="email" name="email">
                 </div>
                 <div class="form-group">
                     <label for="phone">Your Phone Number</label>
@@ -309,7 +360,7 @@
                 </div>
                 <div class="form-group">
                     <label for="subject">Subject</label>
-                    <input type="text" id="subject" name="subject" Optional>
+                    <input type="text" id="subject" name="subject">
                 </div>
                 <div class="form-group">
                     <label for="message">Your Message</label>
@@ -327,198 +378,193 @@
     <div class="admin-panel" id="adminPanel">
         <div class="admin-header">
             <h2>Messages from Users</h2>
-            <button class="close-btn" id="closeAdmin">&times;</button>
+            <button class="close-btn" id="closeAdmin">×</button>
         </div>
         <div id="messagesList"></div>
     </div>
 
     <script>
         // DOM Elements
-        const askExpertBtn = document.getElementById('askExpertBtn');
-        const expertModal = document.getElementById('expertModal');
-        const closeModal = document.getElementById('closeModal');
-        const expertForm = document.getElementById('expertForm');
-        const notification = document.getElementById('notification');
-        const adminPanel = document.getElementById('adminPanel');
-        const messagesList = document.getElementById('messagesList');
-        const closeAdmin = document.getElementById('closeAdmin');
+const askExpertBtn = document.getElementById('askExpertBtn');
+const expertModal = document.getElementById('expertModal');
+const closeModal = document.getElementById('closeModal');
+const expertForm = document.getElementById('expertForm');
+const notification = document.getElementById('notification');
+const adminPanel = document.getElementById('adminPanel');
+const messagesList = document.getElementById('messagesList');
+const closeAdmin = document.getElementById('closeAdmin');
 
-        // Open the modal
-        askExpertBtn.addEventListener('click', () => {
-            expertModal.style.display = 'flex';
-        });
+// Replace with your actual Google Apps Script Web App URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLyNyRlIp0wzvTEqf5COScIo0GeTwvJaW0OzRKYIFD6vsCTXCxrE_l7K1G-qJ5gEAK/exec';
 
-        // Close the modal
-        closeModal.addEventListener('click', () => {
-            expertModal.style.display = 'none';
-        });
+// Open the modal
+askExpertBtn.addEventListener('click', () => {
+    expertModal.style.display = 'flex';
+});
 
-        // Close when clicking outside the modal
-        window.addEventListener('click', (e) => {
-            if (e.target === expertModal) {
-                expertModal.style.display = 'none';
-            }
-        });
+// Close the modal
+closeModal.addEventListener('click', () => {
+    expertModal.style.display = 'none';
+});
 
-        // Form submission
-        expertForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Get form data
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-            
-            // Create message object
-            const messageObj = {
-                id: Date.now(),
-                name,
-                email,
-                subject,
-                message,
-                timestamp: new Date().toISOString(),
-                read: false
-            };
-            
-            // Save to localStorage
-            saveMessage(messageObj);
-            
-            // Show notification
+// Close when clicking outside the modal
+window.addEventListener('click', (e) => {
+    if (e.target === expertModal) {
+        expertModal.style.display = 'none';
+    }
+});
+
+// Form submission
+expertForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+    
+    // Get form data
+    const messageData = {
+        name: document.getElementById('name').value || '',
+        email: document.getElementById('email').value || '',
+        phone: document.getElementById('phone').value || '',
+        subject: document.getElementById('subject').value || '',
+        message: document.getElementById('message').value || '',
+        timestamp: new Date().toISOString()
+    };
+    
+    // Prepare data for Google Apps Script
+    const encodedData = new URLSearchParams();
+    encodedData.append('data', JSON.stringify(messageData));
+    
+    // Submit to Google Sheets
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: encodedData,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result === 'success') {
             showNotification('Message sent successfully!');
-            
-            // Reset form
             expertForm.reset();
-            
-            // Close modal
             expertModal.style.display = 'none';
-        });
-
-        // Save message to localStorage
-        function saveMessage(message) {
-            // Get existing messages
-            let messages = JSON.parse(localStorage.getItem('expertMessages')) || [];
-            
-            // Add new message
-            messages.push(message);
-            
-            // Save back to localStorage
-            localStorage.setItem('expertMessages', JSON.stringify(messages));
-            
-            // Update message count badge (if implemented)
-            updateMessageCount();
+        } else {
+            showNotification('Error: ' + data.message, 'error');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Message sent sucessfully!', 'error');
+    })
+    .finally(() => {
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+    });
+});
 
-        // Show notification
-        function showNotification(text) {
-            notification.textContent = text;
-            notification.style.display = 'block';
-            
-            // Hide after 3 seconds
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
+// Show notification
+function showNotification(text, type = 'success') {
+    notification.textContent = text;
+    notification.className = `notification ${type}`;
+    notification.style.display = 'block';
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+// Admin panel functionality
+// Secret key combination to open admin panel: Ctrl+Shift+A
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        openAdminPanel();
+    }
+});
+
+// Open admin panel
+function openAdminPanel() {
+    loadMessages();
+    adminPanel.style.display = 'block';
+}
+
+// Close admin panel
+closeAdmin.addEventListener('click', () => {
+    adminPanel.style.display = 'none';
+});
+
+// Load messages from Google Sheets
+function loadMessages() {
+    messagesList.innerHTML = '<div class="loading">Loading messages...</div>';
+    
+    fetch(SCRIPT_URL, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
+    })
+    .then(response => response.text())
+    .then(csvData => {
+        displayMessages(csvData);
+    })
+    .catch(error => {
+        console.error('Error loading messages:', error);
+        messagesList.innerHTML = '<div class="error">Failed to load messages</div>';
+    });
+}
 
-        // Update message count
-        function updateMessageCount() {
-            const messages = JSON.parse(localStorage.getItem('expertMessages')) || [];
-            const unreadCount = messages.filter(msg => !msg.read).length;
-            
-            // You could update a badge here if needed
-            // For now, we'll just log it
-            console.log(`Unread messages: ${unreadCount}`);
-        }
-
-        // Admin panel functionality (for the host)
-        // This would normally be protected by authentication
+// Display messages in admin panel
+function displayMessages(csvData) {
+    const lines = csvData.trim().split('\n');
+    
+    // Clear existing messages
+    messagesList.innerHTML = '';
+    
+    if (lines.length <= 1) {
+        messagesList.innerHTML = '<div class="no-messages">No messages yet</div>';
+        return;
+    }
+    
+    // Skip header row and process data
+    const messages = lines.slice(1).map(line => {
+        const columns = line.split(',');
+        return {
+            name: columns[0] || '',
+            email: columns[1] || '',
+            phone: columns[2] || '',
+            subject: columns[3] || '',
+            message: columns[4] || '',
+            timestamp: columns[5] || ''
+        };
+    });
+    
+    // Sort messages by timestamp (newest first)
+    messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Create message cards
+    messages.forEach(msg => {
+        const card = document.createElement('div');
+        card.className = 'message-card';
         
-        // Secret key combination to open admin panel: Ctrl+Shift+A
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-                openAdminPanel();
-            }
-        });
+        const date = new Date(msg.timestamp).toLocaleString();
+        
+        card.innerHTML = `
+            <div class="message-header">
+                <strong>${msg.subject || 'No Subject'}</strong>
+                <span class="message-time">${date}</span>
+            </div>
+            <div>From: ${msg.name} (${msg.email})</div>
+            <div>Phone: ${msg.phone}</div>
+            <div class="message-content">${msg.message}</div>
+        `;
+        
+        messagesList.appendChild(card);
+    });
+}
 
-        // Open admin panel
-        function openAdminPanel() {
-            // Load messages
-            loadMessages();
-            
-            // Show panel
-            adminPanel.style.display = 'block';
-        }
-
-        // Close admin panel
-        closeAdmin.addEventListener('click', () => {
-            adminPanel.style.display = 'none';
-        });
-
-        // Load messages into admin panel
-        function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem('expertMessages')) || [];
-            
-            // Clear existing messages
-            messagesList.innerHTML = '';
-            
-            if (messages.length === 0) {
-                messagesList.innerHTML = '<div class="no-messages">No messages yet</div>';
-                return;
-            }
-            
-            // Sort messages by timestamp (newest first)
-            messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            // Create message cards
-            messages.forEach(msg => {
-                const card = document.createElement('div');
-                card.className = 'message-card';
-                if (!msg.read) {
-                    card.style.borderLeft = '4px solid #FF4136';
-                }
-                
-                const date = new Date(msg.timestamp).toLocaleString();
-                
-                card.innerHTML = `
-                    <div class="message-header">
-                        <strong>${msg.subject}</strong>
-                        <span class="message-time">${date}</span>
-                    </div>
-                    <div>From: ${msg.name} (${msg.email})</div>
-                    <div class="message-content">${msg.message}</div>
-                `;
-                
-                // Mark as read when clicked
-                card.addEventListener('click', () => {
-                    markAsRead(msg.id);
-                    card.style.borderLeft = 'none';
-                });
-                
-                messagesList.appendChild(card);
-            });
-        }
-
-        // Mark message as read
-        function markAsRead(id) {
-            const messages = JSON.parse(localStorage.getItem('expertMessages')) || [];
-            
-            // Find and update the message
-            const updatedMessages = messages.map(msg => {
-                if (msg.id === id) {
-                    return { ...msg, read: true };
-                }
-                return msg;
-            });
-            
-            // Save back to localStorage
-            localStorage.setItem('expertMessages', JSON.stringify(updatedMessages));
-            
-            // Update message count
-            updateMessageCount();
-        }
-
-        // Initialize
-        updateMessageCount();
     </script>
 </body>
 </html>
